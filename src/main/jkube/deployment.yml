@@ -2,12 +2,9 @@ spec:
   template:
     spec:
       containers:
-      - volumeMounts:
-        - mountPath: ${apikey-secret.mountPath}
-          name: foo
-          readOnly: true
-      volumes:
-      - name: foo
-        secret:
-          secretName: apikeysecret
-
+      - env:
+        - name: OPENWEATHER_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: apikeysecret
+              key: apitoken

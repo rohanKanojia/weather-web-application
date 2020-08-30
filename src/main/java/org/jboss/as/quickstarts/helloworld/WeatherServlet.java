@@ -31,19 +31,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * <p>
- * A simple servlet fetching weather details from OpenWeatherMap API
- * </p>
- *
- * <p>
- * The servlet is registered and mapped to /getWeather using the {@linkplain WebServlet
- * @HttpServlet}.
- * </p>
- *
- * @author Pete Muir
- *
- */
 @SuppressWarnings("serial")
 @WebServlet("/getWeather")
 public class WeatherServlet extends HttpServlet {
@@ -53,6 +40,7 @@ public class WeatherServlet extends HttpServlet {
     private static final String LON = "lon";
     private static final String OPENWEATHERMAP_CITY_PARAM = "q";
     private static final String OPENWEATHERMAP_APPID_PARAM = "appid";
+    public static final String APITOKEN_ENV_VAR = "OPENWEATHER_API_KEY";
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -65,7 +53,7 @@ public class WeatherServlet extends HttpServlet {
         writer.close();
     }
 
-    private String performGetToWeatherAPI(Map<String, String> queryParamMap) throws IOException {
+    private String performGetToWeatherAPI(Map<String, String> queryParamMap) {
         OkHttpClient client = new OkHttpClient();
         HttpUrl httpUrl = getWeatherQueryUrl(queryParamMap);
         Request request = new Request.Builder()
@@ -76,14 +64,14 @@ public class WeatherServlet extends HttpServlet {
             if (response.isSuccessful() && response.body() != null) {
                 return response.body().string();
             } else {
-                return "{\"message\": \"Nothing recieved from OpenWeather API. url: "+httpUrl.toString() +"\", }";
+                return "{\"message\": \"Nothing received from OpenWeather API. url: "+httpUrl.toString() +"\", }";
             }
         } catch (IOException exception) {
             return "{\"message\": \"error in connecting to OpenWeather API. url:" + httpUrl.toString() + " " + exception.getMessage() + "}";
         }
     }
 
-    private HttpUrl getWeatherQueryUrl(Map<String, String> queryParamMap) throws IOException {
+    private HttpUrl getWeatherQueryUrl(Map<String, String> queryParamMap) {
         HttpUrl.Builder httpUrlBuilder = HttpUrl.get(OPENWEATHERMAP_WEATHER).newBuilder();
         if (queryParamMap.containsKey(CITY)) {
             httpUrlBuilder.addQueryParameter(OPENWEATHERMAP_CITY_PARAM, queryParamMap.get(CITY));
@@ -92,7 +80,7 @@ public class WeatherServlet extends HttpServlet {
             httpUrlBuilder.addQueryParameter(LAT, queryParamMap.get(LAT));
             httpUrlBuilder.addQueryParameter(LON, queryParamMap.get(LON));
         }
-        httpUrlBuilder.addQueryParameter(OPENWEATHERMAP_APPID_PARAM, APIKeyService.getApiKey());
+        httpUrlBuilder.addQueryParameter(OPENWEATHERMAP_APPID_PARAM, System.getenv(APITOKEN_ENV_VAR));
         return httpUrlBuilder.build();
     }
 
