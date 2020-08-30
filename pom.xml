@@ -2,18 +2,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>wildfly-weather-application</artifactId>
+    <artifactId>weather-web-application</artifactId>
     <packaging>war</packaging>
     <groupId>org.eclipse.jkube</groupId>
     <version>1.0.0-SNAPSHOT</version>
     <name>Simple Weather Application</name>
-    <description>Simple weather application using wildfly</description>
+    <description>Simple weather application using JBoss Servlet APIs</description>
     <properties>
         <jakarta.enterprise.cdi-api.version>3.0.0-M4</jakarta.enterprise.cdi-api.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <jkube.enricher.jkube-service.type>NodePort</jkube.enricher.jkube-service.type>
         <okhttp.version>3.12.12</okhttp.version>
+        <kubernetes-maven-plugin.version>1.0.0-rc-1</kubernetes-maven-plugin.version>
+        <apikey-secret.mountPath>/etc/foo</apikey-secret.mountPath>
     </properties>
 
     <licenses>
@@ -25,13 +27,6 @@
     </licenses>
     
     <dependencies>
-
-        <dependency>
-            <groupId>jakarta.enterprise</groupId>
-            <artifactId>jakarta.enterprise.cdi-api</artifactId>
-            <version>${jakarta.enterprise.cdi-api.version}</version>
-            <scope>provided</scope>
-        </dependency>
 
         <dependency>
             <groupId>org.jboss.spec.javax.annotation</groupId>
@@ -59,7 +54,12 @@
             <plugin>
                 <groupId>org.eclipse.jkube</groupId>
                 <artifactId>kubernetes-maven-plugin</artifactId>
-                <version>1.0.0-rc-1</version>
+                <version>${kubernetes-maven-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.eclipse.jkube</groupId>
+                <artifactId>openshift-maven-plugin</artifactId>
+                <version>${kubernetes-maven-plugin.version}</version>
             </plugin>
         </plugins>
     </build>

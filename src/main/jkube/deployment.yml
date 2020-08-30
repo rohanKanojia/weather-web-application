@@ -1,0 +1,13 @@
+spec:
+  template:
+    spec:
+      containers:
+      - volumeMounts:
+        - mountPath: ${apikey-secret.mountPath}
+          name: foo
+          readOnly: true
+      volumes:
+      - name: foo
+        secret:
+          secretName: apikeysecret
+

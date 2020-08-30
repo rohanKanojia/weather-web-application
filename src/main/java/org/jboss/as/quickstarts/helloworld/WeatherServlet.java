@@ -53,7 +53,6 @@ public class WeatherServlet extends HttpServlet {
     private static final String LON = "lon";
     private static final String OPENWEATHERMAP_CITY_PARAM = "q";
     private static final String OPENWEATHERMAP_APPID_PARAM = "appid";
-    private static final String API_KEY = "2276454694917418ea5bacdffa49e101";
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -66,7 +65,7 @@ public class WeatherServlet extends HttpServlet {
         writer.close();
     }
 
-    private String performGetToWeatherAPI(Map<String, String> queryParamMap) {
+    private String performGetToWeatherAPI(Map<String, String> queryParamMap) throws IOException {
         OkHttpClient client = new OkHttpClient();
         HttpUrl httpUrl = getWeatherQueryUrl(queryParamMap);
         Request request = new Request.Builder()
@@ -80,11 +79,11 @@ public class WeatherServlet extends HttpServlet {
                 return "{\"message\": \"Nothing recieved from OpenWeather API. url: "+httpUrl.toString() +"\", }";
             }
         } catch (IOException exception) {
-            return "{\"message\": \"error in connecting to OpenWeather API. " + exception.getMessage() + "}";
+            return "{\"message\": \"error in connecting to OpenWeather API. url:" + httpUrl.toString() + " " + exception.getMessage() + "}";
         }
     }
 
-    private HttpUrl getWeatherQueryUrl(Map<String, String> queryParamMap) {
+    private HttpUrl getWeatherQueryUrl(Map<String, String> queryParamMap) throws IOException {
         HttpUrl.Builder httpUrlBuilder = HttpUrl.get(OPENWEATHERMAP_WEATHER).newBuilder();
         if (queryParamMap.containsKey(CITY)) {
             httpUrlBuilder.addQueryParameter(OPENWEATHERMAP_CITY_PARAM, queryParamMap.get(CITY));
@@ -93,7 +92,7 @@ public class WeatherServlet extends HttpServlet {
             httpUrlBuilder.addQueryParameter(LAT, queryParamMap.get(LAT));
             httpUrlBuilder.addQueryParameter(LON, queryParamMap.get(LON));
         }
-        httpUrlBuilder.addQueryParameter(OPENWEATHERMAP_APPID_PARAM, API_KEY);
+        httpUrlBuilder.addQueryParameter(OPENWEATHERMAP_APPID_PARAM, APIKeyService.getApiKey());
         return httpUrlBuilder.build();
     }
 
